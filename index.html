@@ -26,12 +26,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="doc in document">
-                        <td>{{doc.no}}</td>
-                        <td>{{doc.sort}}</td>
-                        <td>{{doc.title}}</td>
-                        <td><a v-bind:href="`html/${doc.title}.html`" target="_blank">{{doc.title}}</a></td>
-                        <td>{{doc.endDate}}</td>
+                    <tr v-for="(item,index) in document">
+                        <td>{{index+1}}</td>
+                        <td>{{item.sort}}</td>
+                        <td>{{item.title}}</td>
+                        <td><a v-bind:href="`html/${item.title}.html`" target="_blank">{{item.title}}</a></td>
+                        <td>{{item.endDate}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -47,13 +47,11 @@
                 headers : ["NO","Depth1","Depth2","File Name","End Date"],
                 document :[
                     {
-                        "no" : 1,
                         "sort" : "Layout",
                         "title" : "table",
                         "endDate" : ""                        
                     },
                     {
-                        "no" : 2,
                         "Sort" : "",
                         "title" : "accordion",
                         "endDate" : ""                        
