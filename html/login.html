@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Login</title>
+    <style>        
+        * {margin:0; padding:0;}
+        button {background:none; border:none; cursor:pointer}
+        a {text-decoration: none; color:inherit}
+        #app {margin: 40px auto; width:100%; text-align:center; }
+        .btn {padding:11px 10px; border-radius:3px;}
+        .btn.blue {background:lightblue}
+        .btn-group {margin-top:20px;}
+
+        .login-box {width:320px; margin:0 auto; }
+        .label {display:block; margin-bottom:8px; font-size:12px; text-align:left}
+        .inp-txt input {display:block; width:100%; padding:8px 10px; border-radius: 0; border:1px solid #ddd; box-sizing: border-box;}
+        .inp-txt input::placeholder {color:#aaa}
+        .inp-txt + .inp-txt {margin-top:10px;}
+
+        .login-state-box {margin-top:20px}
+    </style>
+</head>
+<body>
+    <!-- for문으로 테이블 작성 -->
+    <div id="app">
+      <form @submit.prevent="loginOnSubmit">
+        <div class="login-box">
+          <div class="inp-txt">
+            <label for="id" class="label">Id</label>
+            <input type="text" name="" id="id" v-model="loginId" placeholder="Enter your ID">
+          </div>
+          <div class="inp-txt">
+            <label for="password" class="label">Password</label>
+            <input type="text" name="" id="password" v-model="loginPw" placeholder="Enter your password">
+          </div>
+          <div class="btn-group">              
+              <button type="submit" :disabled="loginId.length < 1 || loginPw.length < 1" class="btn blue login">로그인</button>
+          </div>        
+        </div>
+
+        <div class="login-state-box">
+          <a href="/register" v-if="!currentUser">회원가입</a>
+          <a href="/logout" v-if="currentUser">로그아웃</a>
+        </div>
+      </form>
+    </div>
+    <!-- script -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        var app = new Vue({
+            el:"#app",
+            data () {
+              return {
+                loginId : '',
+                loginPw :'',
+                disableTrue : true,
+                currentUser : false                
+              }
+            },
+            methods : {
+              btnActive : function () {
+                  if(this.loginId.length > 0 && this.loginPw.length > 0) return {disableTrue : false}
+                  else return {disableTrue : true}
+              },
+              loginOnSubmit : function () {
+                console.log("ID :" , this.loginId);
+                console.log("PW :" , this.loginPw);
+                this.currentUser = !this.currentUser
+                
+              }
+            }
+        })
+    </script>
+</body>
+</html>
