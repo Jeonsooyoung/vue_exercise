@@ -5,28 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vue Login</title>
     <style>        
-        * {margin:0; padding:0;}
-        button {background:none; border:none; cursor:pointer}
-        a {text-decoration: none; color:inherit}
-        #app {margin: 40px auto; width:100%; text-align:center; }
-        .btn {padding:11px 10px; border-radius:3px;}
-        .btn.blue {background:lightblue}
-        .btn-group {margin-top:20px;}
+      * {margin:0; padding:0;}
+      button {background:none; border:none; cursor:pointer}
+      a {text-decoration: none; color:inherit}
+      body {background-color:steelblue}
+      #app {display: flex; align-items: center; justify-content: center; height: 100vh; text-align:center;}
+      .btn {padding:11px 10px; border-radius:3px;}
+      .btn.blue {background:lightblue}
+      .btn-group {margin-top:20px;}
 
-        .login-box {width:320px; margin:0 auto; }
-        .label {display:block; margin-bottom:8px; font-size:12px; text-align:left}
-        .inp-txt input {display:block; width:100%; padding:8px 10px; border-radius: 0; border:1px solid #ddd; box-sizing: border-box;}
-        .inp-txt input::placeholder {color:#aaa}
-        .inp-txt + .inp-txt {margin-top:10px;}
+      .login-container {padding:40px 40px 20px; width:320px; margin:0 auto; background-color: rgba(0, 0, 0, 0.4); border-radius: 5px; }
+      .label {display:block; margin-bottom:8px; font-size:14px; text-align:left}
+      .inp-txt input {display:block; width:100%; padding:8px 10px; border-radius: 0; border:1px solid #ddd; box-sizing: border-box;}
+      .inp-txt input::placeholder {color:#aaa}
+      .inp-txt + .inp-txt {margin-top:10px;}
 
-        .login-state-box {margin-top:20px}
+      .login-state-box {margin-top:16px}
     </style>
 </head>
 <body>
-    <!-- for문으로 테이블 작성 -->
+    <!-- 1. 아이디 비밀번호 입력 
+    2. 아이디, 비번 서버로 전달 
+    3. DB에서 해당 이메일 조회
+    4. DB의 회원정보와 브라우저의 정보 비교 
+    5. 브라우저로 성공/실패 정보 전달 (토큰으로 전달) 
+    6. 브라우저에서는 반환된 결과가 성공이면 로그인 
+    실패라면 실패 알림
+    -->
     <div id="app">
-      <form @submit.prevent="loginOnSubmit">
-        <div class="login-box">
+      <div class="login-container">
+        <form @submit.prevent="loginSubmit">
           <div class="inp-txt">
             <label for="id" class="label">Id</label>
             <input type="text" name="" id="id" v-model="loginId" placeholder="Enter your ID">
@@ -35,16 +43,17 @@
             <label for="password" class="label">Password</label>
             <input type="text" name="" id="password" v-model="loginPw" placeholder="Enter your password">
           </div>
-          <div class="btn-group">              
-              <button type="submit" :disabled="loginId.length < 1 || loginPw.length < 1" class="btn blue login">로그인</button>
-          </div>        
-        </div>
 
-        <div class="login-state-box">
-          <a href="/register" v-if="!currentUser">회원가입</a>
-          <a href="/logout" v-if="currentUser">로그아웃</a>
-        </div>
-      </form>
+          <div class="btn-group">              
+            <button type="submit" :disabled="loginId.length < 1 || loginPw.length < 1" class="btn blue login">로그인</button>
+          </div>
+          <div class="login-state-box">
+            <a href="#" v-if="!currentUser">회원가입</a>
+            <a href="#logout" v-if="currentUser">로그아웃</a>
+          </div>
+        </form>
+      </div>
+
     </div>
     <!-- script -->
     
@@ -55,6 +64,7 @@
             el:"#app",
             data () {
               return {
+                userInfo : '',
                 loginId : '',
                 loginPw :'',
                 disableTrue : true,
@@ -66,14 +76,42 @@
                   if(this.loginId.length > 0 && this.loginPw.length > 0) return {disableTrue : false}
                   else return {disableTrue : true}
               },
-              loginOnSubmit : function () {
+              loginSubmit : function () {
                 console.log("ID :" , this.loginId);
                 console.log("PW :" , this.loginPw);
                 this.currentUser = !this.currentUser
                 
-              }
+              },
+            },
+            created : function () {
+              // sendAjax({
+              //   url: '/data/user.json',
+              //   methods :"GET",
+              //   success : function (res) {
+              //     var resObj = JSON.parse(res);
+              //     app.categories = resObj.category;
+              //     app.userInfo = resObj.user
+              //   } 
+              // })
             }
         })
+
+
+        // async function sendAjax(url, data){
+        //   var data = data //보내는 데이터 
+        //   var dataInfo = { 
+        //     method : "GET", //메소드 반드시 지정해줘야 app.js 파일에서 찾을수 있음. 
+        //     body : JSON.stringify(data), //JSON 형태로 변환 
+        //     headers : { "Content-Type" : "application/json" }
+        //   };
+        //   const reqURL = await fetch(url,dataInfo);
+        //   const result = await reqURL.json(); //JSON값 받아오기 //내부값 파악 후 로직 작성 
+        //   if(result.result1 === "ok"){ 
+        //     alert("성공")
+        //   }}
+
     </script>
+
 </body>
+
 </html>
