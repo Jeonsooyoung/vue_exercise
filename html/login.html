@@ -10,17 +10,19 @@
       a {text-decoration: none; color:inherit}
       body {background-color:steelblue}
       #app {display: flex; align-items: center; justify-content: center; height: 100vh; text-align:center;}
-      .btn {padding:11px 10px; border-radius:3px;}
+		h2 {margin-bottom:20px; color:#fff;}
+      .btn {width:100%; padding:11px 10px; border-radius:3px; font-size:16px; font-weight:500;}
       .btn.blue {background:lightblue}
+	  .btn:disabled {background:#ccc; color:#ddd}
       .btn-group {margin-top:20px;}
 
-      .login-container {padding:40px 40px 20px; width:320px; margin:0 auto; background-color: rgba(0, 0, 0, 0.4); border-radius: 5px; }
-      .label {display:block; margin-bottom:8px; font-size:14px; text-align:left}
+      .login-container {padding:40px 40px 30px; width:320px; margin:0 auto; background-color: rgba(0, 0, 0, 0.4); border-radius: 5px; }
+      .label {display:block; margin-bottom:8px; font-size:14px; text-align:left; color:#fff}
       .inp-txt input {display:block; width:100%; padding:8px 10px; border-radius: 0; border:1px solid #ddd; box-sizing: border-box;}
       .inp-txt input::placeholder {color:#aaa}
       .inp-txt + .inp-txt {margin-top:10px;}
 
-      .login-state-box {margin-top:16px}
+      .login-state-box {margin-top:16px; color:#fff;}
     </style>
 </head>
 <body>
@@ -35,6 +37,7 @@
     <div id="app">
       <div class="login-container">
         <form @submit.prevent="loginSubmit">
+			<h2>Login</h2>
           <div class="inp-txt">
             <label for="id" class="label">Id</label>
             <input type="text" name="" id="id" v-model="loginId" placeholder="Enter your ID">
