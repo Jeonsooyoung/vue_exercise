@@ -84,31 +84,38 @@
               },
             },
             created : function () {
+              var inputdata = {"id":"id","pw":"pw"}
+              sendAjax('../data/user.json', inputdata)
               // sendAjax({
               //   url: '/data/user.json',
               //   methods :"GET",
               //   success : function (res) {
-              //     var resObj = JSON.parse(res);
-              //     app.categories = resObj.category;
-              //     app.userInfo = resObj.user
+              //     
               //   } 
               // })
             }
         })
 
 
-        // async function sendAjax(url, data){
-        //   var data = data //보내는 데이터 
-        //   var dataInfo = { 
-        //     method : "GET", //메소드 반드시 지정해줘야 app.js 파일에서 찾을수 있음. 
-        //     body : JSON.stringify(data), //JSON 형태로 변환 
-        //     headers : { "Content-Type" : "application/json" }
-        //   };
-        //   const reqURL = await fetch(url,dataInfo);
-        //   const result = await reqURL.json(); //JSON값 받아오기 //내부값 파악 후 로직 작성 
-        //   if(result.result1 === "ok"){ 
-        //     alert("성공")
-        //   }}
+        
+        function sendAjax(url, data) {
+          var data = { 'name': data };
+          data = JSON.stringify(data);
+
+          //data에 inputdata를 json형식으로 넣고 이를 xmlhttprequest를 통해 post방식으로 보냅니다.
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', url);
+          xhr.setRequestHeader('Content-type', "application/json");
+          xhr.send(data);
+
+          //서버에서 결과가 도착하면 그것을 result div에 입력합니다.
+          xhr.addEventListener('load', function () {
+            // var resObj = JSON.parse(res);
+            // app.categories = resObj.category;
+            // app.userInfo = resObj.user
+            console.log(xhr.responseText);
+          });
+        }
 
     </script>
 
