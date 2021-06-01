@@ -26,7 +26,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="td in bodys">
+                    <tr v-for="td in bodies">
                         <td>{{td.no}}</td>
                         <td>{{td.sort}}</td>
                         <td>{{td.title}}</td>
@@ -44,7 +44,7 @@
             el:"#app",
             data: {
                 headers : ["NO","Depth1","Depth2","End Date"],
-                bodys :[
+                bodies :[
                     {
                         "no" : 1,
                         "sort" : "Layout",
