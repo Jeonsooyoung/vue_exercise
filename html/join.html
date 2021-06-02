@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vue Login</title>
+    <title>Vue Join</title>
     <style>        
       * {margin:0; padding:0;}
       button {background:none; border:none; cursor:pointer}
@@ -18,7 +18,7 @@
 	    .btn:disabled {background:#ccc; color:#ddd}
       .btn-group {margin-top:20px;}
 
-      .login-container {padding:40px 40px 30px; width:320px; margin:0 auto; background-color: rgba(0, 0, 0, 0.4); border-radius: 5px; }
+      .container {padding:40px 40px 30px; width:320px; margin:0 auto; background-color: rgba(0, 0, 0, 0.4); border-radius: 5px; }
       .label {display:block; margin-bottom:8px; font-size:14px; text-align:left; color:#fff}
       .inp-txt input {display:block; width:100%; padding:8px 10px; border-radius: 0; border:1px solid #ddd; box-sizing: border-box;}
       .inp-txt input::placeholder {color:#aaa}
@@ -27,6 +27,13 @@
       .login-state-box {margin-top:16px; color:#fff;}
       .txt-warn {margin-top:10px; color:red}
       .txt-success {margin-bottom:10px;}
+
+      .fixed-area {position:fixed; bottom:0; right:0; width:200px; max-height:200px; overflow:auto; background:#fff; border:1px solid #ddd; box-sizing:border-box}
+      .fixed-area > h4 {position:absolute; padding:10px; width:100%; line-height:30px; font-size:20px; border-bottom:1px solid #ddd; background-color:#fff; text-align:center; box-sizing:border-box}
+      .fixed-area .user-info {padding:60px 0 20px;}
+      .fixed-area .user-info h4 {line-height:20px; font-size:16px;}
+      .fixed-area .user-info p {margin-bottom:10px;}
+      .fixed-area .user-info div:last-child p {margin-bottom:0px;}
     </style>
 </head>
 <body>
@@ -39,38 +46,40 @@
     실패라면 실패 알림
     -->
     <div id="app">
-      <div class="login-container">
-        <form @submit.prevent="loginSubmit" v-cloak>
+      <div class="container">
+        <form @submit.prevent="JoinSubmit" v-cloak>
 			    <h2>Join</h2>
           <div class="inp-txt">
-            <label for="id" class="label">Id</label>
-            <input type="text" name="" id="id" v-model="loginId" placeholder="Enter your ID" v-cloak>
+            <label for="joinId" class="label">New Id</label>
+            <input type="text" name="joinId" id="joinId" v-model="joinId" placeholder="Enter your new ID">
           </div>
           <div class="inp-txt">
-            <label for="password" class="label">Password</label>
-            <input type="text" name="" id="password" v-model="loginPw" placeholder="Enter your password" v-cloak>
+            <label for="joinPw" class="label">New Password</label>
+            <input type="text" name="joinPw" id="joinPw" v-model="joinPw" placeholder="Enter your new password">
           </div>
 
           <div class="btn-group">              
-            <button type="submit" 
-            :disabled="loginId.length < 1 || loginPw.length < 1" 
+            <button type="button" 
+            :disabled="joinId.length < 1 || joinPw.length < 1" 
             class="btn blue login" 
-            @click="loginAction" v-cloak>로그인</button>
+            @click="joinAction" v-cloak>계정 생성</button>
           </div>
-          <p v-if="error" class="txt-warn" v-cloak>아이디 비밀번호를 확인해주세요.</p>
           <div class="login-state-box">
             <div v-if="!currentUser" v-cloak>
               <a href="login.html" >로그인</a>              
             </div>
             <div v-else v-cloak>
-              <p class="txt-success">로그인 성공 : {{this.id}}님, 안녕하세요.</p>
-              <a href="#logout" else @click="loginOut" v-cloak>로그아웃</a>
+              <p class="txt-success">계정 생성 성공 : {{this.joinId}}님, 안녕하세요.</p>
+              <a href="join.html" v-cloak>로그인</a>
             </div>
           </div>
           
         </form>
       </div>
-
+      <div class="fixed-area">
+        <h4>계정 정보</h4>
+        <div class="user-info"></div>
+      </div>
     </div>
     <!-- script -->
     
@@ -81,76 +90,90 @@
             el:"#app",
             data () {
               return {
-                userInfo : '',                
-                loginId : '',
-                loginPw :'',
-                disableTrue : true,
-                currentUser : false,
+                joinId: '',
+                joinPw: '',         
                 id : '',
                 pw : '',
-                error :false
+                currentUser :false,
+                error :false,
+                loginState : true,
+                
+                joinConfirmPw: ''                
               }
             },
             methods : {
-              btnActive : function () {
-                  if(this.loginId.length > 0 && this.loginPw.length > 0) return {disableTrue : false}
-                  else return {disableTrue : true}
+              JoinSubmit : function () {
+                // console.log("New ID :" , this.joinId);
+                // console.log("New PW :" , this.joinPw);                
+                this.joinAction({"id" :this.joinId, "pw" : this.joinPw })
               },
-              loginSubmit : function () {
-                // console.log("ID :" , this.loginId);
-                // console.log("PW :" , this.loginPw);                
-                this.loginAction({"id" :this.loginId, "pw" : this.loginPw })
-                
-              },
-              loginAction : function (inputData) {
-                sendAjax('../data/user.json', inputData) //입력한 데이터를 서버의 정보와 비교하기 위해서 AJAX로 전달                
-              },
-              loginOut : function () {
-                this.currentUser = false
-                this.loginId = ''
-                this.loginPw = ''
-              },
+              joinAction : function (inputData) {                   
+                addJson('../mock/user.json', inputData)           
+              }
             },
+            mounted :function () {
+              loadJson('../mock/user.json')
+            }
             
         })
 
-
-        
-        function sendAjax(url, data) {
-          //입력 데이터 { 'user': data }
-          var data = JSON.stringify(data); //입력 데이터 JSON 문자열화
-
+        function addJson(url, inputData) {          
+          
           //data에 inputdata를 json형식으로 넣고 이를 xmlhttprequest를 통해 GET방식으로 보냄
           var xhr = new XMLHttpRequest();
           xhr.open('GET', url);
           xhr.setRequestHeader('Content-type', "application/json");
-          xhr.send(data);
-
+          let userData = JSON.stringify(inputData); //입력 데이터 JSON 문자열화
+          xhr.send(userData);          
+          
           //서버에서 결과가 도착하면 그것을 result div에 입력합니다.
           xhr.addEventListener('load', function () {
-            var resObj = JSON.parse(data); // stringfy 된 데이터를 object 로 변경함
+            console.log(userData)
+            var resObj = JSON.parse(userData); // stringfy 된 데이터를 object 로 변경함
             var savedObj = JSON.parse(xhr.responseText); // stringfy 된 데이터를 object 로 변경함
-          
+            
             app.id = resObj.id;
             app.pw = resObj.pw
-
+            
             savedObj.user.some(function(savedata){
-              if(savedata.id == resObj.id && savedata.pw == resObj.pw) {
-                
-                console.log("로그인 완료")
+              if(savedata.id == resObj.id && savedata.pw == resObj.pw) {                
+                console.log("계정 생성 완료")
                 app.error = false
+                app.id = ''
+                app.pw = ''
                 return app.currentUser = true
                  
               } else {
-                console.log("로그인 실패")
-                app.error = true                
+                console.log("계정 생성 실패")
+                app.error = true
+                app.id = ''
+                app.pw = ''
                 return false
               }
               return
             })
           });
-        }
+        
+      }
 
+      function loadJson(url) {
+        var xhttp = new XMLHttpRequest();
+        
+        xhttp.onreadystatechange = function(){
+          if(this.readyState == 4 && this.status == 200){
+            let users = JSON.parse(this.responseText).user;              
+            for (var i = 1; i < users.length+1; i++) {
+              var div = document.createElement("div")                 
+              div.innerHTML= `<h4>계정${i}</h4><p>id : ${users[i-1].id} pw : ${users[i-1].pw}</p>`
+              document.querySelector(".user-info").appendChild(div)
+            }
+          }
+        }
+        
+        xhttp.open("GET", url);
+        xhttp.setRequestHeader('Content-type', "application/json");
+        xhttp.send();
+      }
     </script>
 
 </body>
