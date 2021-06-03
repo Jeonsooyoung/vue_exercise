@@ -59,7 +59,7 @@
           </div>
 
           <div class="btn-group">              
-            <button type="button" 
+            <button type="submit" 
             :disabled="loginId.length < 1 || loginPw.length < 1" 
             class="btn blue login" 
             @click="loginAction" v-cloak>로그인</button>
@@ -67,50 +67,17 @@
           <p v-if="error" class="txt-warn" v-cloak>아이디 비밀번호를 확인해주세요.</p>
           <div class="login-state-box">
             <div v-if="!currentUser" v-cloak>
-              <a href="#" @click="stateSwitch('join')">계정 생성</a>              
+              <a href="join.html" >계정 생성</a>              
             </div>
             <div v-else v-cloak>
-              <p class="txt-success">로그인 성공 : {{this.id}}님, 안녕하세요.</p>
+              <p class="txt-success">로그인 성공 : {{this.loginId}}님, 안녕하세요.</p>
               <a href="#logout" @click="loginOut" v-cloak>로그아웃</a>
             </div>
           </div>
           
         </form>
       </div>
-      <div class="container" v-else>
-        <form @submit.prevent="JoinSubmit" v-cloak>
-			    <h2>Join</h2>
-          <div class="inp-txt">
-            <label for="joinId" class="label">New Id</label>
-            <input type="text" name="" id="joinId" v-model="joinId" placeholder="Enter your new ID" v-cloak>
-          </div>
-          <div class="inp-txt">
-            <label for="joinPw" class="label">New Password</label>
-            <input type="text" name="" id="joinPw" v-model="joinPw" placeholder="Enter your new password" v-cloak>
-          </div>
-          <!-- <div class="inp-txt">
-            <label for="password" class="label">Confirm Password</label>
-            <input type="text" name="" id="password" v-model="joinConfirmPw" placeholder="Re-enter your password" v-cloak>
-          </div> -->
-
-          <div class="btn-group">              
-            <button type="button" 
-            :disabled="joinId.length < 1 || joinPw.length < 1" 
-            class="btn blue login" 
-            @click="joinAction" v-cloak>계정 생성</button>
-          </div>
-          <div class="login-state-box">
-            <div v-if="!currentUser" v-cloak>
-              <a href="#" @click="stateSwitch('login')">로그인</a>              
-            </div>
-            <div v-else v-cloak>
-              <p class="txt-success">계정 생성 성공 : {{this.id}}님, 안녕하세요.</p>
-              <a href="#logout" @click="stateSwitch('login')" v-cloak>로그인</a>
-            </div>
-          </div>
-          
-        </form>
-      </div>
+      
       <div class="fixed-area">
         <h4>계정 정보</h4>
         <div class="user-info"></div>
@@ -133,11 +100,7 @@
                 id : '',
                 pw : '',
                 error :false,
-                joinError :false,
-                loginState : true,
-                joinId: '',
-                joinPw: '',
-                joinConfirmPw: ''                
+                loginState : true,              
               }
             },
             methods : {
@@ -145,13 +108,14 @@
                 if(this.loginId.length > 0 && this.loginPw.length > 0) return {disableTrue : false}
                 else return {disableTrue : true}
               },
-              loginSubmit : function () {
+              loginSubmit : function (event) {
+                event.preventDefault()
                 // console.log("ID :" , this.loginId);
                 // console.log("PW :" , this.loginPw);                
                 this.loginAction({"id" :this.loginId, "pw" : this.loginPw })                
               },
               loginAction : function (inputData) {
-                sendAjax('../mock/user.json', inputData) //입력한 데이터를 서버의 정보와 비교하기 위해서 AJAX로 전달                
+                sendAjax('./../mock/user.json', inputData) //입력한 데이터를 서버의 정보와 비교하기 위해서 AJAX로 전달                
               },
               loginOut : function () {
                 this.currentUser = false
@@ -171,29 +135,29 @@
                 this.joinAction({"id" :this.joinId, "pw" : this.joinPw })
               },
               joinAction : function (inputData) {                   
-                addAjax('../mock/user.json', inputData)           
+                addAjax('./../mock/user.json', inputData)           
               }
             },
             mounted :function () {
-              loadJson('../mock/user.json')
+              loadJson('./../mock/user.json')
             }
             
         })
 
 
         
-        function sendAjax(url, data) {
-          
-            var data = JSON.stringify(data); //입력 데이터 JSON 문자열화
+        function sendAjax(url, inpData) {
+            var data = JSON.stringify(inpData); //입력 데이터 JSON 문자열화
   
+            console.log("가공전 데이터",data)
             //data에 inputdata를 json형식으로 넣고 이를 xmlhttprequest를 통해 GET방식으로 보냄
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
-            xhr.setRequestHeader('Content-type', "application/json");
+            xhr.setRequestHeader("Content-type", "application/json");
             xhr.send(data);          
-            
             //서버에서 결과가 도착하면 그것을 result div에 입력합니다.
             xhr.addEventListener('load', function () {
+              console.log("가공후 데이터",data)
               var resObj = JSON.parse(data); // stringfy 된 데이터를 object 로 변경함
               var savedObj = JSON.parse(xhr.responseText); // stringfy 된 데이터를 object 로 변경함
               
