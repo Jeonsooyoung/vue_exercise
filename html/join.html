@@ -133,7 +133,7 @@
                     id : thisid,
                     pw : thispw
                   }               
-                  axios.post(url, )
+                  axios.post(url, obj)
                   .then(function (newRes) {
                     //axios 안에서는 this가 window 를 가리킴
                     app.users.push(obj);
