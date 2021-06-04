@@ -47,7 +47,7 @@
     -->
     <div id="app">
       <div class="container" v-if="loginState">
-        <form @submit.prevent="loginSubmit" v-cloak>
+        <form @submit.prevent="loginAction"  v-cloak>
 			    <h2>Login</h2>
           <div class="inp-txt">
             <label for="id" class="label">Id</label>
@@ -61,16 +61,15 @@
           <div class="btn-group">              
             <button type="submit" 
             :disabled="loginId.length < 1 || loginPw.length < 1" 
-            class="btn blue login" 
-            @click="loginAction" v-cloak>로그인</button>
+            class="btn blue login" v-cloak>로그인</button>
           </div>
-          <p v-if="error" class="txt-warn" v-cloak>아이디 비밀번호를 확인해주세요.</p>
+          <p v-if="error" class="txt-warn" v-cloak>{{msg}}</p>
           <div class="login-state-box">
             <div v-if="!currentUser" v-cloak>
               <a href="join.html" >계정 생성</a>              
             </div>
             <div v-else v-cloak>
-              <p class="txt-success">로그인 성공 : {{this.loginId}}님, 안녕하세요.</p>
+              <p class="txt-success">로그인 성공 : {{this.id}}님, 안녕하세요.</p>
               <a href="#logout" @click="loginOut" v-cloak>로그아웃</a>
             </div>
           </div>
@@ -80,7 +79,15 @@
       
       <div class="fixed-area">
         <h4>계정 정보</h4>
-        <div class="user-info"></div>
+        <ul class="user-info" v-if="users.length > 0">
+          <li v-for="(user,index) in users" :key="index" >
+            <span>id : {{user.id}} / pw : {{user.pw}}</span>
+            <button type="button" @click="delJson(index)" >&times;</button>
+          </li>
+        </ul>
+        <div  class="user-info" v-else>
+          계정 정보가 없습니다.
+        </div>
       </div>
     </div>
     <!-- script -->
@@ -88,10 +95,12 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
+      var default_url = '../mock/user.json'
         var app = new Vue({
             el:"#app",
             data () {
-              return {
+              return {                
+                users:[],
                 userInfo : '',                
                 loginId : '',
                 loginPw :'',
@@ -100,46 +109,35 @@
                 id : '',
                 pw : '',
                 error :false,
+                msg : '',
                 loginState : true,              
               }
             },
             methods : {
-              btnActive : function () {
-                if(this.loginId.length > 0 && this.loginPw.length > 0) return {disableTrue : false}
-                else return {disableTrue : true}
-              },
-              loginSubmit : function (event) {
-                event.preventDefault()
+              loginAction : function () {                
                 // console.log("ID :" , this.loginId);
-                // console.log("PW :" , this.loginPw);                
-                this.loginAction({"id" :this.loginId, "pw" : this.loginPw })                
-              },
-              loginAction : function (inputData) {
-                sendAjax('./../mock/user.json', inputData) //입력한 데이터를 서버의 정보와 비교하기 위해서 AJAX로 전달                
+                // console.log("PW :" , this.loginPw);   
+                sendAjax(default_url, {"id" :this.loginId, "pw" : this.loginPw }) //입력한 데이터를 서버의 정보와 비교하기 위해서 AJAX로 전달                
               },
               loginOut : function () {
                 this.currentUser = false
                 this.loginId = ''
                 this.loginPw = ''
               },
-              stateSwitch : function (state) {
-                this.loginState = !this.loginState
-                this.loginId = ''
-                this.loginPw = ''
-                this.joinId = ''
-                this.joinPw = ''
+              loadJson () {
+                axios.get(default_url)
+                .then((res) => this.users = res.data.user)
               },
-              JoinSubmit : function () {
-                // console.log("New ID :" , this.joinId);
-                // console.log("New PW :" , this.joinPw);                
-                this.joinAction({"id" :this.joinId, "pw" : this.joinPw })
-              },
-              joinAction : function (inputData) {                   
-                addAjax('./../mock/user.json', inputData)           
+              delJson (user_i){
+                //axios.delete('../mock/user.json/user/'+user_i)
+                // .then((res) => {
+                //app.loadJson()
+                // })
+                this.users.splice(user_i,1)
               }
             },
             mounted :function () {
-              loadJson('./../mock/user.json')
+              this.loadJson(default_url)
             }
             
         })
@@ -157,7 +155,6 @@
             xhr.send(data);          
             //서버에서 결과가 도착하면 그것을 result div에 입력합니다.
             xhr.addEventListener('load', function () {
-              console.log("가공후 데이터",data)
               var resObj = JSON.parse(data); // stringfy 된 데이터를 object 로 변경함
               var savedObj = JSON.parse(xhr.responseText); // stringfy 된 데이터를 object 로 변경함
               
@@ -167,17 +164,33 @@
               savedObj.user.some(function(savedata){
                 if(savedata.id == resObj.id && savedata.pw == resObj.pw) {                
                   console.log("로그인 완료")
+                  app.msg = ''
                   app.error = false
-                  app.id = ''
-                  app.pw = ''
+                  
                   return app.currentUser = true
                    
+                // } else if(savedata.id == resObj.id && savedata.pw != resObj.pw) {
+                //   console.log("로그인 실패 : 비밀번호 확인")
+                //   app.msg = '비밀번호를 확인해주세요.'
+                //   app.error = true
+                //   app.id = ''
+                //   app.pw = ''
+                //   app.currentUser = false  
+                //   return                  
+                // } else if(savedata.id != resObj.id) {
+                //   console.log("로그인 실패 : 아이디 확인")
+                //   app.msg = '아이디를 확인해주세요.'
+                //   app.error = true
+                //   app.id = ''
+                //   app.pw = ''
+                //   app.currentUser = false  
+                //   return
                 } else {
                   console.log("로그인 실패")
+                  app.msg = '아이디/비밀번호를 확인해주세요.'
                   app.error = true
-                  app.id = ''
-                  app.pw = ''
-                  return false
+                  
+                  return app.currentUser = false
                 }
                 return
               })
@@ -227,22 +240,6 @@
         
       }
 
-        function loadJson(url) {
-          var xhttp = new XMLHttpRequest();
-          xhttp.onreadystatechange = function(){
-            if(this.readyState == 4 && this.status == 200){
-              let users = JSON.parse(this.responseText).user;              
-              for (var i = 1; i < users.length+1; i++) {
-                var div = document.createElement("div")                 
-                div.innerHTML= `<h4>계정${i}</h4><p>id : ${users[i-1].id} pw : ${users[i-1].pw}</p>`
-                document.querySelector(".user-info").appendChild(div)
-              }
-            }
-          };
-          
-          xhttp.open("GET", url, true);
-          xhttp.send();
-        }
     </script>
 
 </body>

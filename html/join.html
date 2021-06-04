@@ -46,7 +46,7 @@
     실패라면 실패 알림
     -->
     <div id="app">
-      <form action="http://localhost:3000/html/join.html/user" @submit.prevent="joinAction" method="post">
+      <form @submit.prevent="joinAction" method="post">
       <div class="container">
 			    <h2>Join</h2>
           <div class="inp-txt">
@@ -147,12 +147,8 @@
                 }
               },
               delJson (user_i){
-                //axios.delete('../mock/user.json/user/'+user_i)
-                // .then((res) => {
-                  //app.loadJson()
-                  // })
-                  this.users.splice(user_i,1)
-                  
+
+                this.users.splice(user_i,1)
               }
 
             },
