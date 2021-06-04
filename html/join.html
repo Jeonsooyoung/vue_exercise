@@ -121,19 +121,19 @@
                 
                 // console.log("New ID :" , this.joinId);
                 // console.log("New PW :" , this.joinPw);   
-                this.addJson(default_url, this.joinId, this.joinPw )
+                this.addJson(this.joinId, this.joinPw )
               },
-              loadJson () {
+              loadJson :  function () {
                 axios.get(default_url)
                 .then((res) => this.users = res.data.user)
               },
-              addJson (url,thisid, thispw){
+              addJson (thisid, thispw){
                 if(thisid && thispw) {   
                   var obj = {
                     id : thisid,
                     pw : thispw
                   }               
-                  axios.post(url, obj)
+                  axios.post(default_url, obj)
                   .then(function (newRes) {
                     //axios 안에서는 this가 window 를 가리킴
                     app.users.push(obj);
