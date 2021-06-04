@@ -46,8 +46,8 @@
     실패라면 실패 알림
     -->
     <div id="app">
+      <form action="http://localhost:3000/html/join.html/user" @submit.prevent="joinAction" method="post">
       <div class="container">
-        <form @submit.prevent="JoinSubmit" v-cloak>
 			    <h2>Join</h2>
           <div class="inp-txt">
             <label for="joinId" class="label">New Id</label>
@@ -62,7 +62,7 @@
             <button type="submit" 
             :disabled="joinId.length < 1 || joinPw.length < 1" 
             class="btn blue login" 
-            @click="joinAction" v-cloak>계정 생성</button>
+           v-cloak>계정 생성</button>
           </div>
           <div class="login-state-box">
             <div v-if="!currentUser" v-cloak>
@@ -78,12 +78,21 @@
             </div>
           </div>
           
-        </form>
       </div>
+      
       <div class="fixed-area">
         <h4>계정 정보</h4>
-        <div class="user-info"></div>
+        <ul class="user-info" v-if="users.length > 0">
+          <li v-for="(user,index) in users" :key="index" >
+            <span>id : {{user.id}} / pw : {{user.pw}}</span>
+            <button type="button" @click="delJson(index)" >&times;</button>
+          </li>
+        </ul>
+        <div  class="user-info" v-else>
+          계정 정보가 없습니다.
+        </div>
       </div>
+    </form>
     </div>
     <!-- script -->
     
@@ -91,105 +100,134 @@
     <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
-        var app = new Vue({
-            el:"#app",
-            data () {
-              return {
-                joinId: '',
-                joinPw: '',         
-                id : '',
-                pw : '',
-                currentUser :false,
-                error :false,
-                loginState : true,
-                
-                joinConfirmPw: ''                
+      var default_url = '../mock/user.json'
+      var app = new Vue({
+        el:"#app",
+        data () {
+          return {
+            users:[],
+            joinId: '',
+            joinPw: '',         
+            id : '',
+            pw : '',
+            currentUser :false,
+            error :false,
+            loginState : true,
+            joinConfirmPw: '' 
               }
             },
             methods : {
-              JoinSubmit : function () {
+              joinAction : function () {
+                
                 // console.log("New ID :" , this.joinId);
-                // console.log("New PW :" , this.joinPw);                
-                this.joinAction({"id" :this.joinId, "pw" : this.joinPw })
+                // console.log("New PW :" , this.joinPw);   
+                this.addJson(default_url, this.joinId, this.joinPw )
               },
-              joinAction : function (inputData) {                   
-                addJson('../mock/user.json', inputData)           
+              loadJson () {
+                axios.get(default_url)
+                .then((res) => this.users = res.data.user)
+              },
+              addJson (url,thisid, thispw){
+                if(thisid && thispw) {   
+                  var obj = {
+                    id : thisid,
+                    pw : thispw
+                  }               
+                  axios.post(url, )
+                  .then(function (newRes) {
+                    //axios 안에서는 this가 window 를 가리킴
+                    app.users.push(obj);
+                    app.joinId = ''
+                    app.joinPw = ''
+                    
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                  });
+                }
+              },
+              delJson (user_i){
+                //axios.delete('../mock/user.json/user/'+user_i)
+                // .then((res) => {
+                  //app.loadJson()
+                  // })
+                  this.users.splice(user_i,1)
+                  
               }
+
             },
             mounted :function () {
-              loadJson('../mock/user.json')
+              this.loadJson()
             }
             
         })
+        // function addJson (url, inputData) {
+        //   var obj = new Object();
+        //   obj.id = inputData.id;
+        //   obj.password = inputData.pw;
+        //   let jsonString = JSON.stringify(obj)
+        //   console.log(jsonString)
 
-      //   function addJson(url, inputData) {
-      //     var obj = new Object();
-      //     obj.id = inputData.id;
-      //     obj.password = inputData.pw;
+        //   const xhr = new XMLHttpRequest()
+        //   xhr.open("POST",'data.php')
+        //   xhr.setRequestHeader("Content-Type","application/json")
+        //   xhr.send(jsonString)
+          
+        //   xhr.onload = function (){
+        //     console.log(this.responseText)
+        //   }
+          
+        // }
 
-      //     var opts = {
-      //       method: 'POST',
-      //       body: obj,
-      //       headers: {
-      //           "Content-Type": "application/json"
-      //       }
-      //     };
-      //     fetch(url, opts)// 클라이언트가 HTTP 요청을 보낼 서버의 URL 주소
-      //     .then(function(response) {
-      //       return response.json();
-      //     }).then(function(body) {
-      //       console.log(body)//json 안에 내용
-      //       window.Unity.call(JSON.parse(JSON.stringify(body)));
-      //     });
-        
-      // }
-      function addJson(url, inputData) {
+      // function addJson(url, inputData) {
 
-        var obj = new Object();
-        obj.id = inputData.id;
-        obj.password = inputData.pw;
-        $.ajax({
-          type: 'POST',
-          url: url,
-          data: obj,
-          success : function(response){
-            console.log("통신 성공")
-            console.log("통신데이터 값 : " + JSON.stringify(response));
-            var getData = JSON.parse(response)
-            console.log("getData",getData)
-          },
-          error : function(){
-            console.log('통신실패!!');
-          },
-          dataType: 'json'
-        })
-        $.post(url, { name: inputData.id, time: inputData.pw });
-        $.post(url, function(data){
-          console.log("데이터 불러온 결과: "+ data);
-        });
+      //   var obj = new Object();
+      //   obj.id = inputData.id;
+      //   obj.password = inputData.pw;
+      //   $.ajax({
+      //     type: 'POST',
+      //     url: url,
+      //     data: obj,
+      //     success : function(response){
+      //       console.log("통신 성공")
+      //       console.log("통신데이터 값 : " + JSON.stringify(response));
+      //       var getData = JSON.parse(response)
+      //       const returnedTarget = Object.assign(JSON.parse(response), newUserData);
+      //       console.log("returnedTarget",returnedTarget)
+
+      //     },
+      //     error : function(){
+      //       console.log('통신실패!!');
+      //     },
+      //     dataType: 'json'
+      //   })
+      //   $.post(url, { name: inputData.id, time: inputData.pw });
+      //   $.post(url, function(data){
+      //     console.log("데이터 불러온 결과: "+ data);
+      //   });
  
 
 
-      }
+      // }
 
-      function loadJson(url) {
-        var xhttp = new XMLHttpRequest();
+      // function loadJson(url) {
+      //   var xhttp = new XMLHttpRequest();
         
-        xhttp.onreadystatechange = function(){
-          if(this.readyState == 4 && this.status == 200){
-            let users = JSON.parse(this.responseText).user;              
-            for (var i = 1; i < users.length+1; i++) {
-              var div = document.createElement("div")                 
-              div.innerHTML= `<h4>계정${i}</h4><p>id : ${users[i-1].id} pw : ${users[i-1].pw}</p>`
-              document.querySelector(".user-info").appendChild(div)
-            }
-          }
-        }
+      //   xhttp.onreadystatechange = function(){
+      //     if(this.readyState == 4 && this.status == 200){
+      //       let users = JSON.parse(this.responseText).user;              
+      //       for (var i = 1; i < users.length+1; i++) {
+      //         var div = document.createElement("div")                 
+      //         div.innerHTML= `<h4>계정${i}</h4><p>id : ${users[i-1].id} pw : ${users[i-1].pw}</p>`
+      //         document.querySelector(".user-info").appendChild(div)
+      //       }
+      //     }
+      //   }
         
-        xhttp.open("GET", url);
-        xhttp.setRequestHeader('Content-type', "application/json");
-        xhttp.send();
-      }
+      //   xhttp.open("GET", url);
+      //   xhttp.setRequestHeader('Content-type', "application/json");
+      //   xhttp.send();
+      // }
     </script>
 
 </body>
