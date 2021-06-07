@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue slider</title>
+    <style>        
+        * {margin:0; padding:0;}
+        [v-clock] {display: none;}
+        button {background:None; border:none; cursor: pointer;}
+        #app {margin: 40px auto; width:1280px; }
+        .slider-container {position:relative; width:600px;height:500px; background-color: #eee; padding:20px 10px; box-sizing:border-box; overflow:hidden; }
+        .slide {position:absolute; top:0; bottom:0; right:0; left:0; z-index:1;}
+        .slider-control {position:absolute; 
+        top:50%; margin-top:-20px; background:#fff; border-radius: 50%;
+         border:1px solid #ccc; width:40px; height:40px; font-size:16px; z-index:1}
+        .slider-control-prev {left:0}
+        .slider-control-next {right:0}
+        .slider-dots {position:absolute; left:50%; transform :translateX(-50%); bottom:10px; display: flex; align-items: center; justify-content: center; gap:10px; z-index:2}
+        .slider-dot {display:inline-block; width:10px; height:10px; border-radius: 50%; text-indent:-9999px; background:#666; }
+        .slider-dot.active {background:red}
+
+        
+    </style>
+</head>
+<body>
+    <!-- for문으로 테이블 작성 -->
+    <!-- slider card 를 드래그하면 넘어감-->
+
+    <div id="app">
+      <div class="slider-container">
+        <div 
+        v-for="(slide,index) in slides" :key="slide"  
+        class="slider-card" v-cloak>
+          <transition :name="slideDirection">
+            <div class="slide" v-show="visibleSlide === index">
+              <div class="headline-2">Slide {{index}}</div>
+              <img :src="slide" alt=""/>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus consequat dolor eu lorem commodo interdum. Praesent ut dictum neque. Duis bibendum, lorem bibendum congue volutpat, felis risus consectetur ipsum, eget varius lacus lacus id massa. Fusce suscipit leo eget lorem porta, nec tempor tellus cursus. Curabitur pellentesque vitae nisi finibus gravida. Praesent id lectus ac lacus tristique consectetur. Integer hendrerit odio vel erat varius, et fermentum arcu dignissim.</p>              
+            </div>
+            </transition>
+          </div>
+        <!-- Next/Prev controls -->
+        <div class="slider-controls">        
+          <button class="slider-control slider-control-prev"
+          @click.stop="slidePrev">«</button>
+          <button class="slider-control slider-control-next"
+          @click.stop="slideNext">»</button>
+        </div>
+  
+        <!-- slider-dots -->
+        <div 
+          class="slider-dots" show-dots="true">
+            <button type="button" 
+            class="slider-dot" 
+            v-for="(slide, dot_index) in slides" 
+            :class="{ active : dot_index === visibleSlide}" >{{dot_index}}</button>        
+        </div>
+      </div>
+    </div>
+    <!-- script -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>      
+        var app = new Vue({
+            el:"#app",
+            data: {
+              slides : [
+                'https://picsum.photos/id/237/600/300',
+                'https://picsum.photos/id/242/600/300',
+                'https://picsum.photos/id/254/600/300',
+                'https://picsum.photos/id/252/600/300',
+                'https://picsum.photos/id/244/600/300',
+              ],
+              visibleSlide : 0 ,
+              slideDirection : 'left'  
+            },
+            computed : {
+              slideLength : function () {
+                return this.slides.length
+              }
+            },
+            methods : {
+              slidePrev : function () {
+                //direction left
+                if(this.visibleSlide <= 0 ) this.visibleSlide = this.slideLength -1;
+                else this.visibleSlide--; 
+                this.slideDirection ='right'
+              },
+              slideNext : function () {
+                if(this.visibleSlide >= this.slideLength -1 ) this.visibleSlide = 0;
+                else this.visibleSlide++;
+                this.slideDirection ='left'
+
+              },
+              dotActive : function (index) {
+                this.visibleSlide === index
+              }
+            }
+        })
+    </script>
+    <style>
+      .left-enter-active {
+        animation : leftInAnimation 0.4s ease-in-out;
+      }
+      .left-leave-active {
+        animation : leftOutAnimation 0.4s ease-in-out;
+      }
+      @keyframes leftInAnimation {
+        from {
+          transform: translate3d(100%, 0, 0);
+        }
+        to {
+          transform: translate3d(0, 0, 0);
+        }
+      }
+      @keyframes leftOutAnimation {
+        from {
+          transform: translate3d(0, 0, 0);
+        }
+        to {
+          transform: translate3d(-100%, 0, 0);
+        }
+      }
+      .right-enter-active {
+        animation : rightInAnimation 0.4s ease-in-out;   
+      }
+      .right-leave-active {
+        animation : rightOutAnimation 0.4s ease-in-out;  
+      }
+      @keyframes rightInAnimation {
+        from {
+          transform: translate3d(-100%, 0, 0);
+        }
+        to {
+          transform: translate3d(0, 0, 0);
+        }
+      }
+      @keyframes rightOutAnimation {
+        from {
+          transform: translate3d(0, 0, 0);
+        }
+        to {
+          transform: translate3d(+100%, 0, 0);
+        }
+      }
+    </style>
+</body>
+</html>
