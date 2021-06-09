@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template</title>
+    <style>        
+      * {margin:0; padding:0;}
+      #app {margin: 40px auto; width:1280px; }
+    </style>
+</head>
+<body>    
+    <div id="app">
+      <div class="tab_container">
+        <div class="tabs">
+          <button type="button" class="tab" v-for="(list,index) in lists" :key="list">{{list.title}}</button>
+        </div>
+        <section class="contents">
+          <div class="content" v-for="(list,index) in lists" :key="list">{{list.content}}</div>
+        </section>
+      </div>
+    </div>
+
+    <!-- script -->  
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el:"#app",
+            data: {
+                currentTab:0,
+                lists : [
+                  {id:1, title:'Tab1', content: '탭 컨텐츠1'},
+                  {id:2, title:'Tab2', content: '탭 컨텐츠2'},
+                  {id:3, title:'Tab3', content: '탭 컨텐츠3'}
+                ]
+            }
+        })
+    </script>
+</body>
+</html>
