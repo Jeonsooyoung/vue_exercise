@@ -7,16 +7,23 @@
     <style>        
       * {margin:0; padding:0;}
       #app {margin: 40px auto; width:1280px; }
+      .tabs {display:flex; gap:3px 10px; margin-bottom:10px;}
+      .tabs .tab {width:100%; padding:8px 20px; border:1px solid #ddd; border-radius:4px;}
+      .tabs .tab.active {background-color:cornflowerblue; color:#fff;}
+      .contents .content {padding:20px; border:1px solid #ddd;}
     </style>
 </head>
 <body>    
     <div id="app">
       <div class="tab_container">
         <div class="tabs">
-          <button type="button" class="tab" v-for="(list,index) in lists" :key="list">{{list.title}}</button>
+          <button type="button" 
+          :class="['tab', {active : index === currentTab} ]"
+          v-for="(list,index) in lists" :key="('tab',index)"
+          @click="currentTab = index">{{list.title}}</button>
         </div>
         <section class="contents">
-          <div class="content" v-for="(list,index) in lists" :key="list">{{list.content}}</div>
+          <div class="content" v-show="index === currentTab" v-for="(list,index) in lists" :key="('content',index)">{{list.content}}</div>
         </section>
       </div>
     </div>
@@ -33,6 +40,12 @@
                   {id:2, title:'Tab2', content: '탭 컨텐츠2'},
                   {id:3, title:'Tab3', content: '탭 컨텐츠3'}
                 ]
+            },
+            methods : {
+              active : function () {
+
+
+              }
             }
         })
     </script>
