@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template</title>
+    <style>        
+      * {margin:0; padding:0;}
+      #app {margin: 40px auto; width:1280px; }
+    </style>
+</head>
+<body>
+  
+    <div id="app">
+
+      <template>
+        <div class="profile-card" :class="{onLoading : onLoading== true} ">
+          <div class="profile-img">            
+            <img v-if="onLoading == true">
+            <img v-else :src="userData.pic" alt="Pic" />
+          </div>
+          <div v-if="onLoading == true" class="profile-info">
+            <span></span>
+            <h3></h3>
+            <p></p>
+          </div>
+          <div v-else class="profile-info">
+            <span> Written By </span>
+            <h3>{{ userData.name }}</h3>
+            <p>{{ userData.bio }}</p>
+          </div>
+        </div>
+      </template>
+
+    </div>
+
+    <!-- script -->  
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type = "module">
+           
+        var app = new Vue({
+            el:"#app",
+            data: {
+              onLoading : true,
+              userData :{
+                  name : "susmoy sen Gupta",
+                  pic : "https://geographical.co.uk/media/k2/items/cache/8e4e30c8fc08507de1b0b5afc7d32a85_XL.jpg",
+                  bio : "I am a Full Stack Web Developer"
+                }
+            },
+            mounted : function () {
+              setTimeout(() => {
+                this.onLoading = false
+              },2000)
+
+            }
+        })
+    </script>
+    <style>
+      .onLoading .profile-img img,
+      .onLoading .profile-info span,
+      .onLoading .profile-info h3,
+      .onLoading .profile-info p {animation : pulse-bg 1s infinite}
+      .onLoading .profile-info span { display:block; width:100%; height:16px; }
+      .onLoading .profile-info h3 {width:250px; height:24px; }
+      .onLoading .profile-info p {width:80%; height:16px; }
+
+      .profile-card {width:100%; max-width:700px; min-height:180px; background:#fff; margin:0 auto; box-sizing:border-box; overflow:hidden; border-radius: 20px;}
+      .profile-img {width:10%; float:left}
+      .profile-img img { width:70px; height:70px; border-radius:50%; border:5px solid #42b883; padding:5px;}
+      .profile-info {width:85%; float:right}
+      .profile-info span {text-transform: uppercase; color:#777; letter-spacing: 3px;}
+      .profile-info h3 {margin:10px 0; font-size:1.5em; color:#222;}
+      .profile-info p {line-height:140%; color:#777}
+      @keyframes pulse-bg {
+        0%{
+          background:#eee;
+        }
+        50%{
+          background:#eaeaea;
+        }
+        100%{
+          background:#eee;
+        }
+      }
+    </style>
+</body>
+
+</html>
