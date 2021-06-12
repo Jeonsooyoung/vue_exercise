@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dropdown menu(default)</title>
+    <style>        
+      * {margin:0; padding:0;}
+      ul, li {list-style: none;}
+      button {background:none; border:none; cursor: pointer;}
+      #app {margin: 40px auto; width:1280px; }
+      .dropdown-menu {position:relative; max-width:200px; }
+      .btn-dropdown,
+      .dropdown-option {width:100%; border-radius:4px; border:1px solid #ddd;
+      }
+      .btn-dropdown {position:relative; padding:11px 36px 11px 10px;  font-size:16px; font-weight:500; text-align: left;}
+      .btn-dropdown:before,
+      .btn-dropdown:after {position:absolute; top:50%; display:block; width:1px; height:8px; margin-top:-4px; content:''; background:#000; }
+      .btn-dropdown:before { right:18px;transform:rotate(-45deg); }
+      .btn-dropdown:after { right:13px; transform:rotate(45deg);}
+      .dropdown-option {position: absolute; top: 44px;  padding:5px 0}
+      .dropdown-option li button {width:100%; padding:8px 10px; font-size:16px; text-align: left;}
+      .dropdown-option li button:hover {background:#eee;  }
+    </style>
+</head>
+<body>
+  
+    <div id="app">
+      <div class="dropdown-menu" 
+      :class="expanded"
+      @click="expanded = !expanded">
+        <button type="button" class="btn btn-dropdown" >{{defaultValue}}</button>
+        <div class="dropdown-option" v-show="expanded == true">
+          <transition name="dropdown">
+            <ul>
+              <li v-for="(option,index) in options" :key="(option.title,index)">
+                <button type="button" class="btn" @click="defaultValue = option.title">{{option.title}}</button>
+              </li>
+            </ul>
+        </transition>
+        </div>
+      </div>
+    </div>
+    <!-- script -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el:"#app",
+            data: {
+                defaultValue : "DropMenu1",
+                expanded : false,              
+                options : [
+                  {title:'option1'},
+                  {title:'option2'},                  
+                ]
+            },
+            methods : {
+            }
+        })
+    </script>
+    <style>
+      .dropdown-enter-to,
+      .dropdown-enter-active {
+        height:auto;
+        opacity: 1;
+        transition: height 1s ease, opacity 1s ease;
+      }
+      .dropdown-leave-to,
+      .dropdown-leave-active {
+        height:0 !important;
+        opacity: 0;
+      }
+    </style>
+</body>
+</html>
